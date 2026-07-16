@@ -817,7 +817,7 @@ function toB64(file) {
 // Safe image src — handles data URL or plain base64
 function safeImgSrc(data, type='image') {
   if (!data) return '';
-  if (data.startsWith('data:') || data.startsWith('http') || data.startsWith('blob:')) return data;
+  if (data.startsWith('data:') || data.startsWith('http') || data.startsWith('blob:') || data.startsWith('/uploads/') || data.startsWith('/')) return data;
   try {
     const head = data.substring(0, 8);
     if (type === 'image') {
