@@ -1364,9 +1364,9 @@ async function postGK(){
   if(!q)return toast('Enter a question!','error');
   try{
     const file=document.getElementById('gkFile').files[0];
-    let qf=null,qft=null;
-    if(file){qf=await toB64(file);qft=file.type.startsWith('image/')?'image':'audio';}
-    await POST('/questions',{question:q,answer:a,answerOpinion:op,questionFile:qf,questionFileType:qft});
+    let qf=null,qft=null,qfn=null;
+    if(file){qf=await toB64(file);qft=file.type.startsWith('image/')?'image':'audio';qfn=file.name;}
+    await POST('/questions',{question:q,answer:a,answerOpinion:op,questionFile:qf,questionFileType:qft,questionFileName:qfn});
     toast('✅ Question posted!','success');
     ['gkQ','gkA','gkOp'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
     document.getElementById('gkFile').value='';document.getElementById('gkPrev').innerHTML='';
@@ -1501,9 +1501,9 @@ async function manualGKPost(){
   if(idx===-1)return toast('No question for today or already posted.','info');
   const q=s.questions[idx];
   try{
-    let qf=null,qft=null;
-    if(_gkFiles[idx]){toast('Uploading file...','info');qf=await toB64(_gkFiles[idx]);qft=_gkFiles[idx].type.startsWith('image/')?'image':'audio';}
-    const res=await POST('/questions',{question:q.question,answer:null,questionFile:qf,questionFileType:qft});
+    let qf=null,qft=null,qfn=null;
+    if(_gkFiles[idx]){toast('Uploading file...','info');qf=await toB64(_gkFiles[idx]);qft=_gkFiles[idx].type.startsWith('image/')?'image':'audio';qfn=_gkFiles[idx].name;}
+    const res=await POST('/questions',{question:q.question,answer:null,questionFile:qf,questionFileType:qft,questionFileName:qfn});
     if(res.question?.id&&q.answer)await fetch(API+'/questions/'+res.question.id+'/answer',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({answer:q.answer})});
     await fetch(API+'/schedule/mark-posted',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({index:idx,postedAt:new Date().toLocaleString('en-IN')})});
     _gkCache=null;delete _gkFiles[idx];toast("✅ Today's question posted!",'success');renderGKBulk();loadGKList();
@@ -1524,9 +1524,9 @@ function startGKMachine(){
     if(idx===-1)return;
     const q=s.questions[idx];
     try{
-      let qf=null,qft=null;
-      if(_gkFiles[idx]){qf=await toB64(_gkFiles[idx]);qft=_gkFiles[idx].type.startsWith('image/')?'image':'audio';}
-      const res=await POST('/questions',{question:q.question,answer:null,questionFile:qf,questionFileType:qft});
+      let qf=null,qft=null,qfn=null;
+      if(_gkFiles[idx]){qf=await toB64(_gkFiles[idx]);qft=_gkFiles[idx].type.startsWith('image/')?'image':'audio';qfn=_gkFiles[idx].name;}
+      const res=await POST('/questions',{question:q.question,answer:null,questionFile:qf,questionFileType:qft,questionFileName:qfn});
       if(res.question?.id&&q.answer)await fetch(API+'/questions/'+res.question.id+'/answer',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({answer:q.answer})});
       await fetch(API+'/schedule/mark-posted',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({index:idx,postedAt:new Date().toLocaleString('en-IN')})});
       _gkCache=null;delete _gkFiles[idx];toast("🤖 Auto-Posted today's GK!",'success');loadGKList();
